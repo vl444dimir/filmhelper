@@ -84,36 +84,44 @@ export const getMovieReviews = async (movieId) => {
 
         const data = await res.json();
         console.log('[Reviews] Found docs:', data.docs?.length || 0);
+        console.log('[Reviews] First doc sample:', JSON.stringify(data.docs?.[0] || 'none').slice(0, 500));
 
         if (!data.docs || data.docs.length === 0) return null;
 
         const pros = [];
         const cons = [];
 
-        data.docs.forEach(review => {
-            const title = (review.title || '').replace(/<[^>]*>/g, '').trim();
+        data.docs.forEach((review, idx) => {
+            const title = (review.title || review.author || '').replace(/<[^>]*>/g, '').trim();
             const desc = (review.description || '').replace(/<[^>]*>/g, '').trim();
-            const text = title || desc;
-            if (!text) return;
+            const text = title + ' ' + desc;
+            if (!text.trim()) return;
+
+            console.log(`[Reviews] Doc #${idx} type:`, review.type, 'text:', text.slice(0, 200));
 
             const words = text
-                .split(/[,\s.?!;:()"–—/]+/)
-                .map(w => w.trim().toLowerCase())
-                .filter(w => w.length > 2 && !/^\d+$/.test(w));
+                .toLowerCase()
+                .split(/[,\s.?!;:()"–—/«»]+/)
+                .map(w => w.replace(/[^а-яёa-z0-9]/g, '').trim())
+                .filter(w => w.length > 1 && !/^\d+$/.test(w));
 
-            if (review.type === 'positive') {
-                pros.push(...words.slice(0, 10));
-            } else if (review.type === 'negative') {
-                cons.push(...words.slice(0, 10));
+            const type = (review.type || '').toLowerCase();
+            if (type === 'positive' || type === 'позитивный') {
+                pros.push(...words);
+            } else if (type === 'negative' || type === 'негативный') {
+                cons.push(...words);
+            } else {
+                pros.push(...words.slice(0, 5));
+                cons.push(...words.slice(0, 5));
             }
         });
 
         const result = {
-            pros: [...new Set(pros)].slice(0, 15),
-            cons: [...new Set(cons)].slice(0, 15)
+            pros: [...new Set(pros)].slice(0, 20),
+            cons: [...new Set(cons)].slice(0, 20)
         };
 
-        console.log('[Reviews] Result:', result);
+        console.log('[Reviews] Final result:', result);
         return result;
     } catch (err) {
         console.log('[Reviews] Error:', err.message);
