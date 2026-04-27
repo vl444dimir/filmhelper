@@ -525,6 +525,38 @@ button:active {
     }
 }
 
+/* ======= Feather Icons ======= */
+.tab-btn svg,
+.mode-btn svg,
+.spin-btn svg,
+.clear-btn svg {
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.125em;
+    margin-right: 4px;
+}
+
+#wheel-add-btn svg {
+    width: 1.2em;
+    height: 1.2em;
+    vertical-align: middle;
+}
+
+.theme-btn svg {
+    width: 1.3em;
+    height: 1.3em;
+    stroke-width: 2;
+}
+
+.rating svg {
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.125em;
+    margin-right: 2px;
+    color: #ffd700;
+    fill: #ffd700;
+}
+
 /* ======= Theme Switcher ======= */
 .theme-toggle {
     position: fixed;

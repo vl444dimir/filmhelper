@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
         searchBtn.disabled = false;
         
         titleEl.textContent = movie.title;
-        ratingEl.innerHTML = `⭐ ${movie.rating.toFixed(1)}`;
+        ratingEl.innerHTML = `<i data-feather="star"></i> ${movie.rating.toFixed(1)}`;
         dateEl.textContent = movie.release_date || 'Дата неизвестна';
         overviewEl.textContent = movie.overview || 'Описание отсутствует.';
         
@@ -118,5 +118,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         resultBox.classList.remove('hidden');
+        feather.replace();
     }
 });
