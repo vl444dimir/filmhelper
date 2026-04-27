@@ -1,68 +1,77 @@
 # Movie Randomizer
 
-Веб-приложение для поиска случайного фильма по жанру и минимальному рейтингу IMDb через API Кинопоиска.
+A web app for discovering random movies by genre, region, and minimum IMDb rating using the Kinopoisk API. Includes a wheel spinner for choosing between your own options, and an AI chatbot powered by Groq for movie recommendations.
 
-Также включает интерактивное «Колесо Фортуны» для выбора из собственных вариантов (например, что посмотреть сегодня вечером) — с режимами «1 победитель» и «На выбывание».
+## Features
 
-## Возможности
+- **Movie Randomizer** — pick genres (multi-select), region, and minimum rating to get a random movie with poster, description, and review highlights (pros/cons via Tavily search + Groq)
+- **Wheel of Fortune** — add your own options, spin to pick one, elimination mode available
+- **Chat Bot** — describe your mood and get 5 movie recommendations via Groq (llama-3.3-70b)
+- **Theme Switcher** — 5 color schemes (Night, Day, Lavender, Emerald, Sunset), persisted in localStorage
+- **Responsive** — glassmorphism UI, works on mobile and desktop
 
-- **Случайный фильм** — выбор жанра и минимального рейтинга, случайный фильм из подходящих
-- **Колесо Фортуны** — добавление собственных вариантов, вращение колеса, два режима
-- **Темы оформления** — 5 цветовых схем (Ночь, День, Лаванда, Изумруд, Закат), выбор сохраняется
-- **Адаптивный дизайн** — Glassmorphism, работа на мобильных и десктопе
+## Stack
 
-## Стек
-
-| Компонент | Технология |
+| Component | Technology |
 |---|---|
-| Бэкенд | Node.js, Express |
-| Фронтенд | HTML, CSS, JavaScript (vanilla) |
-| API | [Kinopoisk API](https://kinopoisk.dev/) |
-| Иконки | Feather Icons |
-| Стиль | Glassmorphism, CSS custom properties |
+| Backend | Node.js, Express |
+| Frontend | HTML, CSS, JavaScript (vanilla) |
+| Movies API | [Kinopoisk API](https://kinopoisk.dev/) |
+| LLM | Groq (llama-3.3-70b-versatile) |
+| Web Search | Tavily |
+| Icons | Feather Icons |
+| Styling | Glassmorphism, CSS custom properties |
 
-## Запуск
+## Getting Started
 
-### 1. Клонирование
+### 1. Clone
 
 ```bash
 git clone https://github.com/username/filmrandomizer.git
 cd filmrandomizer
 ```
 
-### 2. Установка зависимостей
+### 2. Install
 
 ```bash
 npm install
 ```
 
-### 3. Получение API-ключа
+### 3. API Keys
 
-Зарегистрируйтесь на [kinopoisk.dev](https://kinopoisk.dev/) и получите ключ.
+You need three API keys:
 
-### 4. Переменные окружения
+- [Kinopoisk API](https://kinopoisk.dev/) — movie search
+- [Groq](https://console.groq.com/keys) — AI recommendations & review analysis
+- [Tavily](https://tavily.com/) — web search for reviews
 
-Создайте файл `.env` в корне проекта:
+### 4. Environment
+
+Create a `.env` file in the project root:
 
 ```
-KINOPOISK_API_KEY=ваш_ключ
+PORT=3000
+KINOPOISK_API_KEY=your_kinopoisk_key
+GROQ_API_KEY=your_groq_key
+TAVILY_API_KEY=your_tavily_key
 ```
 
-### 5. Запуск
+### 5. Run
 
 ```bash
 npm run dev
 ```
 
-Приложение будет доступно по адресу `http://localhost:3000`.
+Open `http://localhost:3000` in your browser.
 
-## Структура проекта
+## Project Structure
 
 ```
 filmrandomizer/
 ├── backend/
 │   ├── routes/
-│   │   └── movieRoutes.js
+│   │   ├── movieRoutes.js
+│   │   └── chatbotRoutes.js
 │   ├── services/
 │   │   └── kinopoiskService.js
 │   └── server.js
@@ -76,6 +85,6 @@ filmrandomizer/
 └── README.md
 ```
 
-## Лицензия
+## License
 
 MIT
