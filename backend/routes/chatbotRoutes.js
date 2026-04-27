@@ -27,7 +27,7 @@ router.post('/recommend', async (req, res) => {
 Описание пользователя: ${description}`;
 
         const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -44,7 +44,8 @@ router.post('/recommend', async (req, res) => {
         if (!response.ok) {
             const err = await response.text();
             console.error('Gemini API Error:', err);
-            return res.status(502).json({ error: 'Ошибка Gemini API' });
+            const reason = extractGeminiError(err);
+            return res.status(502).json({ error: `Gemini: ${reason}` });
         }
 
         const data = await response.json();
@@ -66,5 +67,14 @@ router.post('/recommend', async (req, res) => {
         res.status(500).json({ error: 'Внутренняя ошибка сервера' });
     }
 });
+
+function extractGeminiError(raw) {
+    try {
+        const parsed = JSON.parse(raw);
+        return parsed?.error?.message || raw.slice(0, 200);
+    } catch {
+        return raw.slice(0, 200);
+    }
+}
 
 export default router;
