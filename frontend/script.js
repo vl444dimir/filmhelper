@@ -45,6 +45,101 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Chatbot
+    const chatInput = document.getElementById('chat-input');
+    const chatSendBtn = document.getElementById('chat-send-btn');
+    const chatLoader = document.getElementById('chat-loader');
+    const chatError = document.getElementById('chat-error');
+    const chatResults = document.getElementById('chat-results');
+
+    chatSendBtn.addEventListener('click', askChatbot);
+    chatInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            askChatbot();
+        }
+    });
+
+    async function askChatbot() {
+        const description = chatInput.value.trim();
+        if (!description) return;
+
+        chatSendBtn.disabled = true;
+        chatLoader.classList.remove('hidden');
+        chatError.classList.add('hidden');
+        chatResults.classList.add('hidden');
+
+        try {
+            const res = await fetch('/api/chatbot/recommend', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ description })
+            });
+
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.error || 'Ошибка сервера');
+            }
+
+            const data = await res.json();
+            showChatResults(data.movies);
+        } catch (err) {
+            chatError.textContent = err.message;
+            chatError.classList.remove('hidden');
+        } finally {
+            chatSendBtn.disabled = false;
+            chatLoader.classList.add('hidden');
+        }
+    }
+
+    function showChatResults(movies) {
+        chatResults.innerHTML = '';
+        chatResults.classList.remove('hidden');
+
+        movies.forEach((movie, i) => {
+            const card = document.createElement('div');
+            card.className = 'chat-card';
+            card.style.animationDelay = `${i * 0.08}s`;
+
+            const top = document.createElement('div');
+            top.className = 'chat-card-top';
+
+            const title = document.createElement('div');
+            title.className = 'chat-card-title';
+            title.textContent = movie.title;
+
+            const meta = document.createElement('div');
+            meta.className = 'chat-card-meta';
+
+            if (movie.imdb) {
+                const imdb = document.createElement('span');
+                imdb.className = 'chat-card-imdb';
+                imdb.innerHTML = `<i data-feather="star"></i> ${movie.imdb.toFixed(1)}`;
+                meta.appendChild(imdb);
+            }
+
+            if (movie.runtime) {
+                const rt = document.createElement('span');
+                rt.className = 'chat-card-runtime';
+                rt.innerHTML = `<i data-feather="clock"></i> ${movie.runtime} мин`;
+                meta.appendChild(rt);
+            }
+
+            top.appendChild(title);
+            top.appendChild(meta);
+
+            const desc = document.createElement('div');
+            desc.className = 'chat-card-desc';
+            desc.textContent = movie.description;
+
+            card.appendChild(top);
+            card.appendChild(desc);
+            chatResults.appendChild(card);
+        });
+
+        feather.replace();
+    }
+
     const genreSelect = document.getElementById('genre-select');
     const ratingInput = document.getElementById('rating-input');
     const searchBtn = document.getElementById('search-btn');

@@ -1,0 +1,4 @@
+node_modules/
+.env
+api-1.json
+test.js

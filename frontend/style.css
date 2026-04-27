@@ -519,17 +519,124 @@ button:active {
 }
 
 @media (min-width: 500px) {
-    .wheel-canvas-wrapper {
-        width: 320px;
-        height: 320px;
+    .theme-popup {
+        flex-direction: row;
     }
+
+    .theme-option {
+        width: 44px;
+        height: 44px;
+    }
+}
+
+/* ======= Chatbot ======= */
+.chat-input-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.chat-input-row textarea {
+    background: var(--input-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--input-text);
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    outline: none;
+    resize: vertical;
+    min-height: 60px;
+    transition: border-color 0.3s;
+}
+
+.chat-input-row textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 10px var(--primary-soft);
+}
+
+.chat-input-row textarea::placeholder {
+    color: var(--text-muted);
+}
+
+.chat-input-row button {
+    margin: 0;
+}
+
+.chat-input-row button svg {
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.125em;
+    margin-right: 6px;
+}
+
+.chat-results {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.chat-card {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    padding: 16px;
+    animation: fadeIn 0.3s ease-out both;
+}
+
+.chat-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.chat-card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.chat-card-meta {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.chat-card-imdb {
+    color: #ffd700;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.chat-card-imdb svg,
+.chat-card-runtime svg {
+    width: 0.85em;
+    height: 0.85em;
+    vertical-align: -0.125em;
+    margin-right: 2px;
+}
+
+.chat-card-runtime {
+    white-space: nowrap;
+}
+
+.chat-card-desc {
+    font-size: 0.9rem;
+    color: var(--overview-text);
+    line-height: 1.5;
 }
 
 /* ======= Feather Icons ======= */
 .tab-btn svg,
 .mode-btn svg,
 .spin-btn svg,
-.clear-btn svg {
+.clear-btn svg,
+#chat-send-btn svg {
     width: 1em;
     height: 1em;
     vertical-align: -0.125em;

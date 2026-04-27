@@ -12,6 +12,7 @@
         <nav class="tabs">
             <button class="tab-btn active" data-tab="randomizer"><i data-feather="film"></i> Randomizer</button>
             <button class="tab-btn" data-tab="wheel"><i data-feather="refresh-cw"></i> Колесо</button>
+            <button class="tab-btn" data-tab="chatbot"><i data-feather="message-circle"></i> Чат-Бот</button>
         </nav>
 
         <div id="tab-randomizer" class="tab-content active">
@@ -95,6 +96,21 @@
 
             <div id="wheel-result" class="wheel-result hidden"></div>
             <div id="wheel-error" class="error-message hidden"></div>
+        </div>
+
+        <div id="tab-chatbot" class="tab-content">
+            <h1>Чат-Бот</h1>
+            <p class="subtitle">Опиши настроение — подберём фильмы</p>
+
+            <div class="chat-input-row">
+                <textarea id="chat-input" rows="3" placeholder="Хочется чего-то лёгкого и смешного про друзей..."></textarea>
+                <button id="chat-send-btn"><i data-feather="send"></i> Спросить</button>
+            </div>
+
+            <div id="chat-loader" class="loader hidden"></div>
+            <div id="chat-error" class="error-message hidden"></div>
+
+            <div id="chat-results" class="chat-results hidden"></div>
         </div>
     </div>
     <div class="theme-toggle">
