@@ -2,6 +2,8 @@ import 'dotenv/config';
 
 const KINOPOISK_API_KEY = process.env.KINOPOISK_API_KEY;
 const BASE_URL = 'https://api.kinopoisk.dev/v1.4';
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
+const TAVILY_API_KEY = process.env.TAVILY_API_KEY;
 
 const fetchOptions = {
     method: 'GET',
@@ -60,69 +62,85 @@ export const getRandomMovie = async (genres, minRating, region) => {
     return pageData.docs[0];
 };
 
-export const getMovieReviews = async (movieId) => {
+export const getMovieReviews = async (movieTitle) => {
     try {
-        if (!movieId) {
-            console.log('[Reviews] No movie ID provided');
-            return null;
-        }
+        if (!movieTitle) return null;
 
-        console.log('[Reviews] Fetching reviews for movieId:', movieId);
+        console.log('[Reviews] Searching Tavily for:', movieTitle);
 
-        const url = new URL(`${BASE_URL}/review`);
-        url.searchParams.append('movieId', movieId);
-        url.searchParams.append('limit', '10');
-        url.searchParams.append('sortField', 'date');
-        url.searchParams.append('sortType', '-1');
-
-        const res = await fetch(url.toString(), fetchOptions);
-
-        if (!res.ok) {
-            console.log('[Reviews] API error:', res.status, await res.text());
-            return null;
-        }
-
-        const data = await res.json();
-        console.log('[Reviews] Found docs:', data.docs?.length || 0);
-        console.log('[Reviews] First doc sample:', JSON.stringify(data.docs?.[0] || 'none').slice(0, 500));
-
-        if (!data.docs || data.docs.length === 0) return null;
-
-        const pros = [];
-        const cons = [];
-
-        data.docs.forEach((review, idx) => {
-            const title = (review.title || review.author || '').replace(/<[^>]*>/g, '').trim();
-            const desc = (review.description || '').replace(/<[^>]*>/g, '').trim();
-            const text = title + ' ' + desc;
-            if (!text.trim()) return;
-
-            console.log(`[Reviews] Doc #${idx} type:`, review.type, 'text:', text.slice(0, 200));
-
-            const words = text
-                .toLowerCase()
-                .split(/[,\s.?!;:()"–—/«»]+/)
-                .map(w => w.replace(/[^а-яёa-z0-9]/g, '').trim())
-                .filter(w => w.length > 1 && !/^\d+$/.test(w));
-
-            const type = (review.type || '').toLowerCase();
-            if (type === 'positive' || type === 'позитивный') {
-                pros.push(...words);
-            } else if (type === 'negative' || type === 'негативный') {
-                cons.push(...words);
-            } else {
-                pros.push(...words.slice(0, 5));
-                cons.push(...words.slice(0, 5));
-            }
+        const tavilyRes = await fetch('https://api.tavily.com/search', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                api_key: TAVILY_API_KEY,
+                query: `${movieTitle} фильм отзывы review`,
+                search_depth: 'basic',
+                max_results: 5
+            })
         });
 
-        const result = {
-            pros: [...new Set(pros)].slice(0, 20),
-            cons: [...new Set(cons)].slice(0, 20)
+        if (!tavilyRes.ok) {
+            console.log('[Reviews] Tavily error:', await tavilyRes.text());
+            return null;
+        }
+
+        const tavilyData = await tavilyRes.json();
+        const snippets = (tavilyData.results || []).map(r => r.content).filter(Boolean);
+
+        if (snippets.length === 0) {
+            console.log('[Reviews] No Tavily results');
+            return null;
+        }
+
+        console.log('[Reviews] Tavily snippets count:', snippets.length);
+
+        if (!GROQ_API_KEY) return null;
+
+        const prompt = `По этим фрагментам рецензий на фильм определи, что хвалят и что ругают. Верни ТОЛЬКО JSON без объяснений:
+{
+  "pros": ["слово1", "слово2", ...],
+  "cons": ["слово1", "слово2", ...]
+}
+Ключевые слова на русском, не больше 15 штук в каждом списке.
+
+Фрагменты:
+${snippets.map((s, i) => `[${i + 1}] ${s.slice(0, 1000)}`).join('\n\n')}`;
+
+        const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${GROQ_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: 'llama-3.3-70b-versatile',
+                messages: [{ role: 'user', content: prompt }],
+                temperature: 0.3,
+                max_tokens: 500
+            })
+        });
+
+        if (!groqRes.ok) {
+            console.log('[Reviews] Groq error:', await groqRes.text());
+            return null;
+        }
+
+        const groqData = await groqRes.json();
+        const text = groqData?.choices?.[0]?.message?.content || '';
+
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) {
+            console.log('[Reviews] No JSON in Groq response:', text.slice(0, 300));
+            return null;
+        }
+
+        const result = JSON.parse(jsonMatch[0]);
+        console.log('[Reviews] Groq result:', result);
+        return {
+            pros: (result.pros || []).slice(0, 20),
+            cons: (result.cons || []).slice(0, 20)
         };
 
-        console.log('[Reviews] Final result:', result);
-        return result;
     } catch (err) {
         console.log('[Reviews] Error:', err.message);
         return null;
