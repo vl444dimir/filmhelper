@@ -770,9 +770,10 @@ button:active {
 }
 
 .theme-btn svg {
-    width: 1.3em;
-    height: 1.3em;
-    stroke-width: 2;
+    width: 1.2em;
+    height: 1.2em;
+    stroke-width: 1.5;
+    opacity: 0.6;
 }
 
 .rating svg {
