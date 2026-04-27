@@ -140,7 +140,21 @@ document.addEventListener('DOMContentLoaded', () => {
         feather.replace();
     }
 
-    const genreSelect = document.getElementById('genre-select');
+    // Genre chips
+    const genreChips = document.querySelectorAll('.chip');
+    const selectedGenres = new Set();
+    genreChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            chip.classList.toggle('active');
+            if (chip.classList.contains('active')) {
+                selectedGenres.add(chip.dataset.value);
+            } else {
+                selectedGenres.delete(chip.dataset.value);
+            }
+        });
+    });
+
+    const regionSelect = document.getElementById('region-select');
     const ratingInput = document.getElementById('rating-input');
     const searchBtn = document.getElementById('search-btn');
     
@@ -153,22 +167,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const ratingEl = document.getElementById('movie-rating');
     const dateEl = document.getElementById('movie-date');
     const overviewEl = document.getElementById('movie-overview');
+    const tagsEl = document.getElementById('movie-tags');
+    const reviewsBox = document.getElementById('movie-reviews');
+    const reviewsPros = document.getElementById('reviews-pros');
+    const reviewsCons = document.getElementById('reviews-cons');
 
     searchBtn.addEventListener('click', searchRandomMovie);
 
     async function searchRandomMovie() {
-        const genreId = genreSelect.value;
-        const minRating = ratingInput.value || 0;
-
-        if (!genreId) {
-            showError('Пожалуйста, выберите жанр.');
+        if (selectedGenres.size === 0) {
+            showError('Выберите хотя бы один жанр.');
             return;
         }
+
+        const genres = [...selectedGenres].join(',');
+        const minRating = ratingInput.value || 0;
+        const region = regionSelect.value;
 
         uiStateLoading();
 
         try {
-            const response = await fetch(`/api/movies/random?genre=${genreId}&minRating=${minRating}`);
+            const response = await fetch(`/api/movies/random?genres=${genres}&minRating=${minRating}&region=${region}`);
             
             if (!response.ok) {
                 if (response.status === 404) throw new Error('Фильмы не найдены, попробуйте изменить параметры.');
@@ -204,6 +223,30 @@ document.addEventListener('DOMContentLoaded', () => {
         ratingEl.innerHTML = `<i data-feather="star"></i> ${movie.rating.toFixed(1)}`;
         dateEl.textContent = movie.release_date || 'Дата неизвестна';
         overviewEl.textContent = movie.overview || 'Описание отсутствует.';
+
+        tagsEl.innerHTML = '';
+        if (movie.genres) {
+            movie.genres.split(', ').filter(Boolean).forEach(g => {
+                const span = document.createElement('span');
+                span.className = 'tag';
+                span.textContent = g;
+                tagsEl.appendChild(span);
+            });
+        }
+        if (movie.countries) {
+            const span = document.createElement('span');
+            span.className = 'tag tag-country';
+            span.innerHTML = `<i data-feather="map-pin"></i> ${movie.countries}`;
+            tagsEl.appendChild(span);
+        }
+
+        if (movie.reviews && movie.reviews.pros.length + movie.reviews.cons.length > 0) {
+            reviewsBox.classList.remove('hidden');
+            reviewsPros.innerHTML = movie.reviews.pros.map(w => `<span class="review-word">${w}</span>`).join('');
+            reviewsCons.innerHTML = movie.reviews.cons.map(w => `<span class="review-word">${w}</span>`).join('');
+        } else {
+            reviewsBox.classList.add('hidden');
+        }
         
         if (movie.poster) {
             posterEl.src = movie.poster;

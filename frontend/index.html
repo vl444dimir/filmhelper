@@ -21,26 +21,38 @@
 
             <div class="controls">
                 <div class="input-group">
-                    <label for="genre-select">Жанр</label>
-                    <select id="genre-select">
-                        <option value="" disabled selected>Выберите жанр</option>
-                        <option value="боевик">Боевик</option>
-                        <option value="комедия">Комедия</option>
-                        <option value="драма">Драма</option>
-                        <option value="ужасы">Ужасы</option>
-                        <option value="триллер">Триллер</option>
-                        <option value="фантастика">Фантастика</option>
-                        <option value="мелодрама">Мелодрама</option>
-                        <option value="детектив">Детектив</option>
-                        <option value="криминал">Криминал</option>
-                        <option value="биография">Биография</option>
-                        <option value="фэнтези">Фэнтези</option>
-                        <option value="документальный">Документальный</option>
-                    </select>
+                    <label>Жанры (можно несколько)</label>
+                    <div class="genre-chips" id="genre-chips">
+                        <button class="chip" data-value="боевик">Боевик</button>
+                        <button class="chip" data-value="комедия">Комедия</button>
+                        <button class="chip" data-value="драма">Драма</button>
+                        <button class="chip" data-value="ужасы">Ужасы</button>
+                        <button class="chip" data-value="триллер">Триллер</button>
+                        <button class="chip" data-value="фантастика">Фантастика</button>
+                        <button class="chip" data-value="мелодрама">Мелодрама</button>
+                        <button class="chip" data-value="детектив">Детектив</button>
+                        <button class="chip" data-value="криминал">Криминал</button>
+                        <button class="chip" data-value="биография">Биография</button>
+                        <button class="chip" data-value="фэнтези">Фэнтези</button>
+                        <button class="chip" data-value="документальный">Документальный</button>
+                    </div>
                 </div>
-                <div class="input-group">
-                    <label for="rating-input">Мин. рейтинг IMDb</label>
-                    <input type="number" id="rating-input" min="0" max="10" step="0.1" value="7.0">
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="region-select">Регион</label>
+                        <select id="region-select">
+                            <option value="any">Любой</option>
+                            <option value="usa">США</option>
+                            <option value="europe">Европа</option>
+                            <option value="asia">Азия</option>
+                            <option value="russia">Россия / СНГ</option>
+                            <option value="other">Другие</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="rating-input">Мин. рейтинг</label>
+                        <input type="number" id="rating-input" min="0" max="10" step="0.1" value="7.0">
+                    </div>
                 </div>
                 <button id="search-btn">Найти фильм</button>
             </div>
@@ -56,10 +68,21 @@
                 <div class="movie-info">
                     <h2 id="movie-title">Название</h2>
                     <div class="meta">
-                        <span id="movie-rating" class="rating">⭐ 0.0</span>
-                        <span id="movie-date" class="date">YYYY-MM-DD</span>
+                        <span id="movie-rating" class="rating"><i data-feather="star"></i> 0.0</span>
+                        <span id="movie-date" class="date">YYYY</span>
                     </div>
+                    <div class="movie-tags" id="movie-tags"></div>
                     <p id="movie-overview" class="overview">Описание</p>
+                    <div id="movie-reviews" class="reviews hidden">
+                        <div class="reviews-pros">
+                            <div class="reviews-label"><i data-feather="thumbs-up"></i> Что хвалят</div>
+                            <div class="reviews-words" id="reviews-pros"></div>
+                        </div>
+                        <div class="reviews-cons">
+                            <div class="reviews-label"><i data-feather="thumbs-down"></i> Что ругают</div>
+                            <div class="reviews-words" id="reviews-cons"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

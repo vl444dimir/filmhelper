@@ -260,6 +260,14 @@ button:active {
     font-weight: 600;
 }
 
+.rating svg {
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.125em;
+    margin-right: 2px;
+    fill: #ffd700;
+}
+
 .date {
     color: var(--text-muted);
 }
@@ -519,14 +527,126 @@ button:active {
 }
 
 @media (min-width: 500px) {
-    .theme-popup {
-        flex-direction: row;
+    .wheel-canvas-wrapper {
+        width: 320px;
+        height: 320px;
     }
+}
 
-    .theme-option {
-        width: 44px;
-        height: 44px;
-    }
+/* ======= Genre chips ======= */
+.input-row {
+    display: flex;
+    gap: 12px;
+}
+
+.input-row .input-group {
+    flex: 1;
+}
+
+.genre-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.chip {
+    margin: 0;
+    padding: 8px 14px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.chip:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--hover-text);
+    transform: none;
+    box-shadow: none;
+}
+
+.chip.active {
+    background: var(--primary-soft);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* ======= Movie tags ======= */
+.movie-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.tag {
+    padding: 4px 10px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.tag svg {
+    width: 0.8em;
+    height: 0.8em;
+    vertical-align: -0.1em;
+    margin-right: 2px;
+}
+
+.tag-country {
+    color: var(--primary);
+}
+
+/* ======= Reviews ======= */
+.reviews {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--glass-border);
+}
+
+.reviews-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.reviews-label svg {
+    width: 0.9em;
+    height: 0.9em;
+    vertical-align: -0.15em;
+    margin-right: 4px;
+}
+
+.reviews-pros, .reviews-cons {
+    margin-bottom: 12px;
+}
+
+.reviews-words {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.review-word {
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 0.78rem;
+}
+
+.reviews-pros .review-word {
+    background: rgba(52, 211, 153, 0.12);
+    color: #34d399;
+}
+
+.reviews-cons .review-word {
+    background: rgba(251, 113, 113, 0.12);
+    color: #fb7171;
 }
 
 /* ======= Chatbot ======= */
