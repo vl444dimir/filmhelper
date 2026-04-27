@@ -9,9 +9,9 @@ router.post('/recommend', async (req, res) => {
             return res.status(400).json({ error: 'Описание обязательно' });
         }
 
-        const apiKey = process.env.GEMINI_API_KEY;
-        if (!apiKey) {
-            return res.status(500).json({ error: 'GEMINI_API_KEY не настроен' });
+        const groqKey = process.env.GROQ_API_KEY;
+        if (!groqKey) {
+            return res.status(500).json({ error: 'GROQ_API_KEY не настроен' });
         }
 
         const prompt = `Ты помощник по подбору фильмов. Пользователь описывает, что хочет посмотреть. Верни 5 подходящих фильмов в виде массива JSON без какого-либо дополнительного текста и markdown-разметки.
@@ -26,38 +26,41 @@ router.post('/recommend', async (req, res) => {
 
 Описание пользователя: ${description}`;
 
-        const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }],
-                    generationConfig: {
-                        temperature: 0.7,
-                        maxOutputTokens: 1024
-                    }
-                })
-            }
-        );
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${groqKey}`
+            },
+            body: JSON.stringify({
+                model: 'llama-3.3-70b-versatile',
+                messages: [{ role: 'user', content: prompt }],
+                temperature: 0.7,
+                max_tokens: 1024
+            })
+        });
 
         if (!response.ok) {
             const err = await response.text();
-            console.error('Gemini API Error:', err);
-            const reason = extractGeminiError(err);
-            return res.status(502).json({ error: `Gemini: ${reason}` });
+            console.error('Groq API Error:', err);
+            try {
+                const parsed = JSON.parse(err);
+                return res.status(502).json({ error: `Groq: ${parsed?.error?.message || err.slice(0, 200)}` });
+            } catch {
+                return res.status(502).json({ error: `Groq: ${err.slice(0, 200)}` });
+            }
         }
 
         const data = await response.json();
-        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        const text = data?.choices?.[0]?.message?.content;
 
         if (!text) {
-            return res.status(502).json({ error: 'Пустой ответ от Gemini' });
+            return res.status(502).json({ error: 'Пустой ответ от Groq' });
         }
 
         const jsonMatch = text.match(/\[[\s\S]*\]/);
         if (!jsonMatch) {
-            return res.status(502).json({ error: 'Не удалось распарсить ответ Gemini' });
+            return res.status(502).json({ error: 'Не удалось распарсить ответ Groq' });
         }
 
         const movies = JSON.parse(jsonMatch[0]);
@@ -67,14 +70,5 @@ router.post('/recommend', async (req, res) => {
         res.status(500).json({ error: 'Внутренняя ошибка сервера' });
     }
 });
-
-function extractGeminiError(raw) {
-    try {
-        const parsed = JSON.parse(raw);
-        return parsed?.error?.message || raw.slice(0, 200);
-    } catch {
-        return raw.slice(0, 200);
-    }
-}
 
 export default router;
