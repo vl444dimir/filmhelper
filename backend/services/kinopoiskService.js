@@ -73,9 +73,9 @@ export const getMovieReviews = async (movieTitle) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 api_key: TAVILY_API_KEY,
-                query: `${movieTitle} фильм отзывы review`,
-                search_depth: 'basic',
-                max_results: 5
+                query: `"${movieTitle}" рецензия отзывы critique`,
+                search_depth: 'advanced',
+                max_results: 8
             })
         });
 
@@ -96,12 +96,12 @@ export const getMovieReviews = async (movieTitle) => {
 
         if (!GROQ_API_KEY) return null;
 
-        const prompt = `По этим фрагментам рецензий на фильм определи, что хвалят и что ругают. Верни ТОЛЬКО JSON без объяснений:
+        const prompt = `На основе рецензий выдели, какие конкретные аспекты фильма хвалят, а какие ругают. Не просто эмоции, а именно про что говорят (сюжет, игра актёров, визуал, музыка, юмор, темп, концовка и т.д.). Верни ТОЛЬКО JSON без объяснений:
 {
-  "pros": ["слово1", "слово2", ...],
-  "cons": ["слово1", "слово2", ...]
+  "pros": ["сюжет захватывающий", "игра актёров", "красивый визуал", ...],
+  "cons": ["затянутый темп", "слабый сценарий", ...]
 }
-Ключевые слова на русском, не больше 15 штук в каждом списке.
+Не больше 10 коротких фраз в каждом списке. Фразы на русском, 1-4 слова.
 
 Фрагменты:
 ${snippets.map((s, i) => `[${i + 1}] ${s.slice(0, 1000)}`).join('\n\n')}`;
