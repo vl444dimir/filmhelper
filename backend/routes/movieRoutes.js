@@ -11,13 +11,16 @@ router.get('/random', async (req, res) => {
         const movie = await getRandomMovie(genres, Number(minRating), region);
         if (!movie) return res.status(404).json({ error: 'Фильмы не найдены' });
 
+        const movieId = movie.id || movie._id;
+        console.log('[Movie] ID:', movieId, 'Title:', movie.name);
+
         let reviews = null;
-        if (movie.id) {
-            reviews = await getMovieReviews(movie.id);
+        if (movieId) {
+            reviews = await getMovieReviews(movieId);
         }
 
         res.json({
-            id: movie.id,
+            id: movieId,
             title: movie.name || movie.alternativeName || 'Без названия',
             rating: movie.rating?.imdb || 0,
             overview: movie.description || movie.shortDescription || 'Описание отсутствует.',

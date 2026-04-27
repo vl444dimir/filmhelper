@@ -195,6 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const movie = await response.json();
+            console.log('[Movie] Response:', movie);
             showResult(movie);
         } catch (error) {
             showError(error.message);

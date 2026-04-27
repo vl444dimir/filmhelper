@@ -62,6 +62,13 @@ export const getRandomMovie = async (genres, minRating, region) => {
 
 export const getMovieReviews = async (movieId) => {
     try {
+        if (!movieId) {
+            console.log('[Reviews] No movie ID provided');
+            return null;
+        }
+
+        console.log('[Reviews] Fetching reviews for movieId:', movieId);
+
         const url = new URL(`${BASE_URL}/review`);
         url.searchParams.append('movieId', movieId);
         url.searchParams.append('limit', '10');
@@ -69,34 +76,47 @@ export const getMovieReviews = async (movieId) => {
         url.searchParams.append('sortType', '-1');
 
         const res = await fetch(url.toString(), fetchOptions);
-        if (!res.ok) return null;
+
+        if (!res.ok) {
+            console.log('[Reviews] API error:', res.status, await res.text());
+            return null;
+        }
 
         const data = await res.json();
+        console.log('[Reviews] Found docs:', data.docs?.length || 0);
+
         if (!data.docs || data.docs.length === 0) return null;
 
         const pros = [];
         const cons = [];
 
         data.docs.forEach(review => {
-            const text = review.title || review.description || '';
+            const title = (review.title || '').replace(/<[^>]*>/g, '').trim();
+            const desc = (review.description || '').replace(/<[^>]*>/g, '').trim();
+            const text = title || desc;
+            if (!text) return;
+
             const words = text
-                .replace(/<[^>]*>/g, '')
-                .split(/[,\s.?!;:()"]+/)
+                .split(/[,\s.?!;:()"–—/]+/)
                 .map(w => w.trim().toLowerCase())
-                .filter(w => w.length > 3);
+                .filter(w => w.length > 2 && !/^\d+$/.test(w));
 
             if (review.type === 'positive') {
-                pros.push(...words.slice(0, 8));
+                pros.push(...words.slice(0, 10));
             } else if (review.type === 'negative') {
-                cons.push(...words.slice(0, 8));
+                cons.push(...words.slice(0, 10));
             }
         });
 
-        return {
-            pros: [...new Set(pros)].slice(0, 12),
-            cons: [...new Set(cons)].slice(0, 12)
+        const result = {
+            pros: [...new Set(pros)].slice(0, 15),
+            cons: [...new Set(cons)].slice(0, 15)
         };
-    } catch {
+
+        console.log('[Reviews] Result:', result);
+        return result;
+    } catch (err) {
+        console.log('[Reviews] Error:', err.message);
         return null;
     }
 };
