@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Случайный Фильм</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+</head>
+<body>
+    <div class="glass-container">
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="randomizer"><i data-feather="film"></i> Randomizer</button>
+            <button class="tab-btn" data-tab="wheel"><i data-feather="refresh-cw"></i> Колесо</button>
+        </nav>
+
+        <div id="tab-randomizer" class="tab-content active">
+            <h1>Movie Randomizer</h1>
+            <p class="subtitle">Найди идеальный фильм на вечер</p>
+
+            <div class="controls">
+                <div class="input-group">
+                    <label for="genre-select">Жанр</label>
+                    <select id="genre-select">
+                        <option value="" disabled selected>Выберите жанр</option>
+                        <option value="боевик">Боевик</option>
+                        <option value="комедия">Комедия</option>
+                        <option value="драма">Драма</option>
+                        <option value="ужасы">Ужасы</option>
+                        <option value="триллер">Триллер</option>
+                        <option value="фантастика">Фантастика</option>
+                        <option value="мелодрама">Мелодрама</option>
+                        <option value="детектив">Детектив</option>
+                        <option value="криминал">Криминал</option>
+                        <option value="биография">Биография</option>
+                        <option value="фэнтези">Фэнтези</option>
+                        <option value="документальный">Документальный</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="rating-input">Мин. рейтинг IMDb</label>
+                    <input type="number" id="rating-input" min="0" max="10" step="0.1" value="7.0">
+                </div>
+                <button id="search-btn">Найти фильм</button>
+            </div>
+
+            <div id="loader" class="loader hidden"></div>
+
+            <div id="error-message" class="error-message hidden"></div>
+
+            <div id="result-box" class="result-box hidden">
+                <div class="poster-container">
+                    <img id="movie-poster" src="" alt="Постер фильма">
+                </div>
+                <div class="movie-info">
+                    <h2 id="movie-title">Название</h2>
+                    <div class="meta">
+                        <span id="movie-rating" class="rating">⭐ 0.0</span>
+                        <span id="movie-date" class="date">YYYY-MM-DD</span>
+                    </div>
+                    <p id="movie-overview" class="overview">Описание</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-wheel" class="tab-content">
+            <h1>Колесо Фортуны</h1>
+            <p class="subtitle">Впиши варианты и крути!</p>
+
+            <div class="wheel-input-row">
+                <input type="text" id="wheel-input" placeholder="Например: Матрица" maxlength="40">
+                <button id="wheel-add-btn"><i data-feather="plus"></i></button>
+            </div>
+
+            <div class="wheel-options-header">
+                <span>Варианты (<span id="wheel-count">0</span>)</span>
+                <button id="wheel-clear-btn" class="clear-btn hidden"><i data-feather="x"></i> Очистить</button>
+            </div>
+            <ul id="wheel-list" class="wheel-list"></ul>
+
+            <div class="wheel-mode">
+                <label class="mode-label">Режим:</label>
+                <div class="mode-btns">
+                    <button class="mode-btn active" data-mode="single"><i data-feather="award"></i> 1 победитель</button>
+                    <button class="mode-btn" data-mode="elimination"><i data-feather="crosshair"></i> На выбывание</button>
+                </div>
+            </div>
+
+            <div class="wheel-canvas-wrapper">
+                <canvas id="wheel-canvas" width="400" height="400"></canvas>
+                <div class="wheel-pointer">▼</div>
+            </div>
+
+            <button id="wheel-spin-btn" class="spin-btn" disabled><i data-feather="rotate-cw"></i> Крутить!</button>
+
+            <div id="wheel-result" class="wheel-result hidden"></div>
+            <div id="wheel-error" class="error-message hidden"></div>
+        </div>
+    </div>
+    <div class="theme-toggle">
+        <div id="theme-popup" class="theme-popup hidden">
+            <button class="theme-option" data-theme="night" style="background: #00d2ff" title="Ночь"></button>
+            <button class="theme-option" data-theme="light" style="background: #4a6fa5" title="День"></button>
+            <button class="theme-option" data-theme="lavender" style="background: #c084fc" title="Лаванда"></button>
+            <button class="theme-option" data-theme="emerald" style="background: #34d399" title="Изумруд"></button>
+            <button class="theme-option" data-theme="sunset" style="background: #fb923c" title="Закат"></button>
+        </div>
+        <button id="theme-btn" class="theme-btn"><i data-feather="palette"></i></button>
+    </div>
+    <script src="script.js"></script>
+    <script src="wheel.js"></script>
+</body>
+</html>
